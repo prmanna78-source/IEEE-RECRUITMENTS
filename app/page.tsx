@@ -17,7 +17,6 @@ import { WhyJoin } from "@/components/WhyJoin";
 import { Recruitment } from "@/components/Recruitment";
 import { Timeline } from "@/components/Timeline";
 import { Experience } from "@/components/Experience";
-import { Testimonials } from "@/components/Testimonials";
 import { FAQ } from "@/components/FAQ";
 import { FinalCTA } from "@/components/FinalCTA";
 import { Footer } from "@/components/Footer";
@@ -57,7 +56,6 @@ export default function Home() {
         <Recruitment onOpenRecruitmentModal={handleOpenModal} />
         <Timeline onOpenRecruitmentModal={handleOpenModal} />
         <Experience />
-        <Testimonials />
         <FAQ onOpenRecruitmentModal={handleOpenModal} />
         <FinalCTA onOpenRecruitmentModal={handleOpenModal} />
       </main>

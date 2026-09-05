@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle, ArrowRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { LiveApplyButton } from "@/components/LiveApplyButton";
 import { LiquidGlassCard } from "@/components/ui/liquid-glass";
 
 interface FAQProps {
   onOpenRecruitmentModal: () => void;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 export const FAQ: React.FC<FAQProps> = ({ onOpenRecruitmentModal }) => {
   const [openId, setOpenId] = useState<string | null>(siteConfig.faqs[0].id);
@@ -82,31 +82,6 @@ export const FAQ: React.FC<FAQProps> = ({ onOpenRecruitmentModal }) => {
           })}
         </div>
 
-        {/* Bottom Help Callout */}
-        <LiquidGlassCard
-          glowIntensity="sm"
-          shadowIntensity="sm"
-          borderRadius="20px"
-          blurIntensity="xl"
-          className="mt-12 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
-        >
-          <div className="flex items-center gap-3">
-            <HelpCircle className="w-6 h-6 text-cyan-400 shrink-0" />
-            <div>
-              <p className="text-sm font-display font-semibold text-white">
-                Ready to take the first step?
-              </p>
-              <p className="text-xs text-slate-400 font-mono">
-                Submit your application through the recruitment portal.
-              </p>
-            </div>
-          </div>
-          <LiveApplyButton
-            onClick={onOpenRecruitmentModal}
-            size="sm"
-            text="APPLY NOW"
-          />
-        </LiquidGlassCard>
       </div>
     </section>
   );
