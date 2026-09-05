@@ -1,28 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 
 export const LiveShaderBackground: React.FC = () => {
   const [mounted, setMounted] = useState(false);
-  // Pause shader animation during scroll to prevent jank
-  const [isScrolling, setIsScrolling] = useState(false);
-  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setMounted(true);
-
-    const handleScroll = () => {
-      setIsScrolling(true);
-      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
-      scrollTimerRef.current = setTimeout(() => setIsScrolling(false), 150);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
-    };
   }, []);
 
   if (!mounted) {
@@ -30,11 +15,17 @@ export const LiveShaderBackground: React.FC = () => {
   }
 
   return (
+    // CSS-only GPU isolation: promote to its own compositor layer so it never
+    // competes with scroll — no React state changes, no animation restarts.
     <div
       className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
-      style={{ willChange: "transform", contain: "strict" }}
+      style={{
+        transform: "translateZ(0)",
+        WebkitTransform: "translateZ(0)",
+        willChange: "transform",
+        isolation: "isolate",
+      }}
     >
-      {/* 3D WebGL Shader Gradient — paused while scrolling to eliminate jank */}
       <div className="absolute inset-0 w-full h-full">
         <ShaderGradientCanvas
           style={{ width: "100%", height: "100%" }}
@@ -44,7 +35,7 @@ export const LiveShaderBackground: React.FC = () => {
           pointerEvents="none"
         >
           <ShaderGradient
-            animate={isScrolling ? "off" : "on"}
+            animate="on"
             type="sphere"
             wireframe={false}
             shader="defaults"
@@ -80,7 +71,7 @@ export const LiveShaderBackground: React.FC = () => {
         </ShaderGradientCanvas>
       </div>
 
-      {/* Dark frosted scrim overlay ensuring content readability while allowing rich colors to shimmer through */}
+      {/* Dark frosted scrim overlay ensuring content readability */}
       <div className="absolute inset-0 bg-[#03060C]/65 pointer-events-none" />
 
       {/* Radial vignette for cinematic depth */}
@@ -91,3 +82,4 @@ export const LiveShaderBackground: React.FC = () => {
     </div>
   );
 };
+
