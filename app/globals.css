@@ -10,7 +10,9 @@
     --color-ieee-blue: #00629b;
     --color-cyan-glow: #38bdf8;
     --font-inter: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-display: var(--font-space-grotesk), sans-serif;
+    --font-manrope: var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-display: var(--font-manrope), sans-serif;
+    --font-space-grotesk: var(--font-manrope), sans-serif;
   }
 
   * {
@@ -27,6 +29,10 @@
     color: #f1f5f9;
     font-family: var(--font-inter);
     overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-manrope), sans-serif;
   }
 
   /* Custom Sleek Scrollbar */
@@ -48,7 +54,11 @@
 
 /* Typography helper classes */
 .font-display {
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-manrope), sans-serif;
+}
+
+.font-manrope {
+  font-family: var(--font-manrope), sans-serif;
 }
 
 .font-sans {
