@@ -33,15 +33,6 @@ export const Recruitment: React.FC<RecruitmentProps> = ({ onOpenRecruitmentModal
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#73bfc4] via-[#8da0ce] to-[#ff810a]" />
 
           {/* Eyebrow */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-cyan-300 font-mono text-xs font-semibold uppercase tracking-wider mb-6"
-          >
-            <Sparkles className="w-4 h-4 text-[#73bfc4]" />
-            <span>IEEE COMPUTER SOCIETY GITAM — RECRUITMENT 2026</span>
-          </motion.div>
 
           {/* Dramatic Heading */}
           <motion.h2
