@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -245,7 +245,7 @@ const GlassYearCard: React.FC<GlassYearCardProps> = ({
                 fontFamily: "var(--font-space-grotesk), sans-serif",
                 color: "#fff",
                 letterSpacing: "-0.01em",
-                textShadow: "0 1px 5px rgba(0,0,0,0.55)",
+                textShadow: "0 1px 8px rgba(0,0,0,0.75), 0 0 20px rgba(0,0,0,0.4)",
               }}
             >
               {label.toUpperCase()}
@@ -254,7 +254,7 @@ const GlassYearCard: React.FC<GlassYearCardProps> = ({
               style={{
                 marginTop: 7,
                 fontSize: "0.78rem",
-                color: "rgba(255,255,255,0.48)",
+                color: "rgba(255,255,255,0.88)",
                 lineHeight: 1.55,
               }}
             >
@@ -267,7 +267,7 @@ const GlassYearCard: React.FC<GlassYearCardProps> = ({
             style={{
               marginTop: 20,
               paddingTop: 14,
-              borderTop: "1px solid rgba(255,255,255,0.09)",
+              borderTop: "1px solid rgba(255,255,255,0.15)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
@@ -459,11 +459,12 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
                 </div>
                 <h2
                   id="recruitment-modal-title"
-                  className="text-2xl sm:text-3xl font-display font-extrabold text-white tracking-tight"
+                  className="text-2xl sm:text-3xl font-display font-extrabold tracking-tight"
+                  style={{ color: "#ffffff", textShadow: "0 2px 16px rgba(0,0,0,0.6), 0 0 40px rgba(115,191,196,0.15)" }}
                 >
                   SELECT YOUR YEAR
                 </h2>
-                <p className="mt-2 text-sm max-w-xs mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.42)" }}>
+                <p className="mt-2 text-sm max-w-xs mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.78)" }}>
                   Choose your academic year to open the appropriate recruitment form.
                 </p>
               </div>
@@ -502,7 +503,7 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
                   fontSize: 11,
                   fontFamily: "monospace",
                   letterSpacing: "0.03em",
-                  color: "rgba(255,255,255,0.22)",
+                  color: "rgba(255,255,255,0.62)",
                 }}
               >
                 Opens in a new tab · Google Forms · Log in with your GITAM account
