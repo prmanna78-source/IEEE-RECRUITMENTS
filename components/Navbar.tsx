@@ -135,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRecruitmentModal }) => {
               onClick={onOpenRecruitmentModal}
               size="sm"
               text="APPLY NOW"
-              className="hidden md:inline-flex"
+              className="hidden lg:inline-flex"
             />
 
             {/* Mobile Menu Hamburger */}
