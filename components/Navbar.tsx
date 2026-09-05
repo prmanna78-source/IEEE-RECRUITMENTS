@@ -150,43 +150,64 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRecruitmentModal }) => {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay Drawer */}
+      {/* Mobile Menu — full screen overlay so page content never bleeds through */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 top-[72px] z-30 p-4 lg:hidden"
-          >
-            <div className="liquid-glass border border-white/15 rounded-2xl p-6 shadow-2xl space-y-4">
-              <nav className="flex flex-col space-y-2">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:text-cyan-300 hover:bg-white/5 transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </nav>
+          <>
+            {/* Dark backdrop covering entire page */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 z-40 lg:hidden"
+              style={{ background: "rgba(2, 5, 15, 0.88)" }}
+            />
 
-              <div className="pt-4 border-t border-white/10">
-                <LiveApplyButton
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenRecruitmentModal();
-                  }}
-                  size="md"
-                  text="APPLY NOW"
-                  className="w-full"
-                />
+            {/* Drawer panel */}
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed inset-x-0 top-[64px] z-50 p-3 lg:hidden"
+            >
+              <div
+                className="rounded-2xl p-5 shadow-2xl space-y-3 border border-white/12"
+                style={{
+                  background: "rgba(8, 12, 28, 0.97)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                }}
+              >
+                <nav className="flex flex-col space-y-1">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="px-4 py-3.5 rounded-xl text-base font-semibold text-slate-100 hover:text-cyan-300 hover:bg-white/[0.06] transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </nav>
+
+                <div className="pt-3 border-t border-white/10">
+                  <LiveApplyButton
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenRecruitmentModal();
+                    }}
+                    size="md"
+                    text="APPLY NOW"
+                    className="w-full"
+                  />
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
