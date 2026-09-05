@@ -35,15 +35,12 @@ export const LiveShaderBackground: React.FC = () => {
       style={{ willChange: "transform", contain: "strict" }}
     >
       {/* 3D WebGL Shader Gradient — paused while scrolling to eliminate jank */}
-      <div
-        className="absolute inset-0 w-full h-full opacity-90"
-        style={{ willChange: "transform" }}
-      >
+      <div className="absolute inset-0 w-full h-full">
         <ShaderGradientCanvas
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+          style={{ width: "100%", height: "100%" }}
           lazyLoad={undefined}
           fov={undefined}
-          pixelDensity={0.75}
+          pixelDensity={1}
           pointerEvents="none"
         >
           <ShaderGradient
@@ -52,8 +49,8 @@ export const LiveShaderBackground: React.FC = () => {
             wireframe={false}
             shader="defaults"
             uTime={0}
-            uSpeed={0.12}
-            uStrength={0.25}
+            uSpeed={0.3}
+            uStrength={0.3}
             uDensity={0.8}
             uFrequency={5.5}
             uAmplitude={3.2}
@@ -74,7 +71,7 @@ export const LiveShaderBackground: React.FC = () => {
             lightType="env"
             brightness={0.8}
             envPreset="city"
-            grain="off"
+            grain="on"
             toggleAxis={false}
             zoomOut={false}
             hoverState=""
@@ -83,11 +80,13 @@ export const LiveShaderBackground: React.FC = () => {
         </ShaderGradientCanvas>
       </div>
 
-      {/* Dark scrim for readability */}
+      {/* Dark frosted scrim overlay ensuring content readability while allowing rich colors to shimmer through */}
       <div className="absolute inset-0 bg-[#03060C]/65 pointer-events-none" />
-      {/* Vignette */}
+
+      {/* Radial vignette for cinematic depth */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#03060C]/50 via-transparent to-[#03060C]/80 pointer-events-none" />
-      {/* Grid */}
+
+      {/* Cybernetic grid overlay */}
       <div className="absolute inset-0 tech-grid-pattern opacity-20 pointer-events-none" />
     </div>
   );
