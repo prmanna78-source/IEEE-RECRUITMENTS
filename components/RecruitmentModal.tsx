@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,19 +12,256 @@ interface RecruitmentModalProps {
   onClose: () => void;
 }
 
+interface GlassYearCardProps {
+  href: string;
+  year: RecruitmentYear;
+  label: string;
+  number: string;
+  description: string;
+  accentColor: string;
+  accentRgb: string;
+  isSelected: boolean;
+  isRedirecting: boolean;
+  onClick: () => void;
+}
+
+const GlassYearCard: React.FC<GlassYearCardProps> = ({
+  href,
+  label,
+  number,
+  description,
+  accentColor,
+  accentRgb,
+  isSelected,
+  isRedirecting,
+  onClick,
+}) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      whileHover={{ scale: 1.035, y: -4 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 340, damping: 28 }}
+      aria-label={`Open ${label} recruitment form`}
+      style={{ textDecoration: "none", display: "block" }}
+      className="relative h-full"
+    >
+      {/* Outer glow halo */}
+      <motion.div
+        animate={{
+          opacity: isSelected ? 0.9 : hovered ? 0.7 : 0.35,
+          scale: isSelected ? 1.08 : hovered ? 1.05 : 1,
+        }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        style={{
+          position: "absolute",
+          inset: "-12px",
+          borderRadius: "32px",
+          background: `radial-gradient(ellipse at 50% 60%, rgba(${accentRgb}, 0.28) 0%, rgba(${accentRgb}, 0.08) 55%, transparent 75%)`,
+          filter: "blur(18px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      {/* Glass card body */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          borderRadius: "24px",
+          overflow: "hidden",
+          height: "100%",
+          backdropFilter: "blur(40px) saturate(200%) brightness(1.12)",
+          WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.12)",
+          backgroundColor: isSelected
+            ? `rgba(${accentRgb}, 0.18)`
+            : "rgba(255, 255, 255, 0.07)",
+          border: isSelected
+            ? `1.5px solid rgba(${accentRgb}, 0.6)`
+            : "1.5px solid rgba(255, 255, 255, 0.22)",
+          boxShadow: isSelected
+            ? `inset 0 1.5px 0 rgba(255,255,255,0.55), inset 1.5px 0 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(255,255,255,0.06), 0 24px 48px -8px rgba(0,0,0,0.55), 0 0 0 1px rgba(${accentRgb}, 0.25), 0 0 40px -4px rgba(${accentRgb}, 0.35)`
+            : `inset 0 1.5px 0 rgba(255,255,255,0.45), inset 1.5px 0 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(255,255,255,0.04), 0 16px 36px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)`,
+          transition: "all 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+      >
+        {/* Layer 1: Top specular sheen arc */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "48%",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 55%, transparent 100%)",
+            borderRadius: "24px 24px 60% 60% / 24px 24px 40px 40px",
+            pointerEvents: "none",
+            zIndex: 2,
+          }}
+        />
+
+        {/* Layer 2: Prismatic left-edge refraction */}
+        <div
+          style={{
+            position: "absolute",
+            top: "8%",
+            left: 0,
+            width: "3px",
+            height: "60%",
+            background: `linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 30%, rgba(${accentRgb},0.6) 55%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0) 100%)`,
+            borderRadius: "0 2px 2px 0",
+            pointerEvents: "none",
+            zIndex: 2,
+            opacity: hovered || isSelected ? 0.9 : 0.5,
+            transition: "opacity 0.3s ease",
+          }}
+        />
+
+        {/* Layer 3: Animated shimmer sweep */}
+        <motion.div
+          animate={{ x: hovered || isSelected ? "200%" : "-60%" }}
+          transition={{ duration: hovered ? 0.75 : 0.5, ease: "easeInOut" }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "-60%",
+            width: "55%",
+            height: "100%",
+            background: "linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.09) 50%, transparent 80%)",
+            transform: "skewX(-12deg)",
+            pointerEvents: "none",
+            zIndex: 3,
+          }}
+        />
+
+        {/* Layer 4: Bottom reflection tint */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "35%",
+            background: `linear-gradient(0deg, rgba(${accentRgb}, 0.07) 0%, transparent 100%)`,
+            pointerEvents: "none",
+            zIndex: 2,
+          }}
+        />
+
+        {/* Content */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 10,
+            padding: "28px 24px 24px",
+            display: "flex",
+            flexDirection: "column" as const,
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+        >
+          <div>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
+              <div
+                style={{
+                  fontSize: "3.5rem",
+                  fontWeight: 900,
+                  lineHeight: 1,
+                  fontFamily: "var(--font-space-grotesk), sans-serif",
+                  color: accentColor,
+                  textShadow: `0 0 24px rgba(${accentRgb}, 0.6), 0 2px 8px rgba(0,0,0,0.4)`,
+                  letterSpacing: "-0.04em",
+                  filter: isSelected ? "brightness(1.2)" : "brightness(1)",
+                  transition: "filter 0.3s ease",
+                }}
+              >
+                {number}
+              </div>
+              <div
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "100px",
+                  background: `rgba(${accentRgb}, 0.12)`,
+                  border: `1px solid rgba(${accentRgb}, 0.3)`,
+                  backdropFilter: "blur(8px)",
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  fontFamily: "monospace",
+                  letterSpacing: "0.1em",
+                  color: accentColor,
+                  textTransform: "uppercase" as const,
+                }}
+              >
+                OPEN
+              </div>
+            </div>
+
+            <h3
+              style={{
+                fontSize: "1.25rem",
+                fontWeight: 800,
+                fontFamily: "var(--font-space-grotesk), sans-serif",
+                color: "#ffffff",
+                letterSpacing: "-0.01em",
+                margin: 0,
+                textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              {label.toUpperCase()}
+            </h3>
+            <p style={{ marginTop: "8px", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
+              {description}
+            </p>
+          </div>
+
+          <div
+            style={{
+              marginTop: "24px",
+              paddingTop: "16px",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            {isSelected ? (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "0.8rem", fontWeight: 700, color: accentColor, fontFamily: "monospace", letterSpacing: "0.05em" }}>
+                <CheckCircle2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} />
+                OPENING FORM...
+              </span>
+            ) : (
+              <>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", fontWeight: 700, color: accentColor, fontFamily: "monospace", letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+                  CONTINUE
+                  <ArrowRight style={{ width: 14, height: 14 }} />
+                </span>
+                <ExternalLink style={{ width: 14, height: 14, color: `rgba(${accentRgb}, 0.5)` }} />
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.a>
+  );
+};
+
 export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onClose }) => {
   const [selectedYear, setSelectedYear] = useState<RecruitmentYear | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close on Escape key and trap focus
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
+      if (e.key === "Escape" && isOpen) onClose();
     };
-
     if (isOpen) {
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
@@ -33,32 +270,26 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
       setSelectedYear(null);
       setIsRedirecting(false);
     }
-
     return () => {
       document.body.style.overflow = "unset";
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);
 
-  // Fires AFTER the native <a> has already handled navigation (no popup blocking possible).
-  // Handles only visual feedback and modal close.
   const handleYearClick = (year: RecruitmentYear) => {
     if (isRedirecting) return;
-
     setSelectedYear(year);
     setIsRedirecting(true);
-
     try {
       confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ["#73bfc4", "#ff810a", "#8da0ce", "#ffffff"]
+        particleCount: 70,
+        spread: 70,
+        origin: { y: 0.55 },
+        colors: ["#73bfc4", "#ff810a", "#8da0ce", "#ffffff", "#a5f3fc"],
       });
     } catch {
       // safe fallback
     }
-
     setTimeout(() => {
       setIsRedirecting(false);
       setSelectedYear(null);
@@ -73,30 +304,43 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
           role="dialog"
           aria-modal="true"
           aria-labelledby="recruitment-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
         >
-          {/* Backdrop */}
+          {/* Frosted backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.3 }}
             onClick={onClose}
-            className="fixed inset-0 bg-[#030712]/85 backdrop-blur-2xl"
+            className="fixed inset-0"
+            style={{
+              background: "rgba(2, 6, 18, 0.82)",
+              backdropFilter: "blur(28px) saturate(140%)",
+              WebkitBackdropFilter: "blur(28px) saturate(140%)",
+            }}
           />
 
-          {/* Ambient lighting */}
+          {/* Ambient blobs */}
           <div className="fixed inset-0 pointer-events-none flex items-center justify-center">
-            <div className="w-[600px] h-[600px] bg-gradient-to-tr from-[#73bfc4]/20 via-[#ff810a]/15 to-transparent rounded-full blur-3xl opacity-80" />
+            <div
+              style={{
+                width: 560,
+                height: 560,
+                borderRadius: "50%",
+                background: "radial-gradient(ellipse, rgba(115,191,196,0.18) 0%, rgba(255,129,10,0.12) 50%, transparent 75%)",
+                filter: "blur(40px)",
+              }}
+            />
           </div>
 
-          {/* Modal Card */}
+          {/* Modal panel */}
           <motion.div
             ref={modalRef}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.94, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, scale: 0.94, y: 24 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="relative w-full max-w-2xl z-10"
           >
             <LiquidGlassCard
@@ -104,147 +348,99 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
               shadowIntensity="lg"
               borderRadius="32px"
               blurIntensity="xl"
-              className="w-full border border-white/20 shadow-2xl shadow-black/90"
+              className="w-full"
+              style={{
+                border: "1px solid rgba(255,255,255,0.18)",
+                backgroundColor: "rgba(8, 12, 24, 0.55)",
+              }}
             >
-              <div className="h-1.5 w-full bg-gradient-to-r from-[#73bfc4] via-[#8da0ce] to-[#ff810a]" />
+              {/* Accent stripe */}
+              <div className="h-1 w-full bg-gradient-to-r from-[#73bfc4] via-[#8da0ce] to-[#ff810a]" />
 
+              {/* Close button */}
               <button
                 onClick={onClose}
-                aria-label="Close recruitment modal"
-                className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 z-20"
+                aria-label="Close"
+                className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full text-white/50 hover:text-white transition-colors"
+                style={{
+                  background: "rgba(255,255,255,0.07)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  backdropFilter: "blur(12px)",
+                }}
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
 
-              <div className="p-6 sm:p-8 pb-4 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-cyan-400 text-xs font-mono font-medium tracking-wider mb-3">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  IEEE CS GITAM • RECRUITMENT 2026
+              {/* Header */}
+              <div className="px-7 pt-7 pb-4 text-center">
+                <div
+                  className="inline-flex items-center gap-2 mb-3"
+                  style={{
+                    padding: "5px 14px",
+                    borderRadius: "100px",
+                    background: "rgba(115,191,196,0.1)",
+                    border: "1px solid rgba(115,191,196,0.25)",
+                    backdropFilter: "blur(10px)",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    fontFamily: "monospace",
+                    letterSpacing: "0.1em",
+                    color: "#73bfc4",
+                  }}
+                >
+                  <Sparkles className="w-3 h-3" />
+                  IEEE CS GITAM · RECRUITMENT 2026
                 </div>
                 <h2
                   id="recruitment-modal-title"
-                  className="text-2xl sm:text-3xl font-display font-bold text-white tracking-tight"
+                  className="text-2xl sm:text-3xl font-display font-extrabold text-white tracking-tight"
                 >
                   SELECT YOUR YEAR
                 </h2>
-                <p className="mt-2 text-sm sm:text-base text-slate-400 max-w-md mx-auto">
-                  Choose the academic year you are currently studying in to continue with the appropriate recruitment form.
+                <p className="mt-2 text-sm text-white/40 max-w-sm mx-auto leading-relaxed">
+                  Choose your academic year to open the appropriate recruitment form.
                 </p>
               </div>
 
-              {/* Selection Cards Grid */}
-              <div className="p-6 sm:p-8 pt-2 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-
-                {/* Card 1: SECOND YEAR — uses a native <a> tag so the browser ALWAYS opens it */}
-                <motion.a
+              {/* Glass cards */}
+              <div className="p-6 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <GlassYearCard
                   href={recruitmentForms.secondYear}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  year="secondYear"
+                  label="Second Year"
+                  number="02"
+                  description="For students currently in their second year of study."
+                  accentColor="#73bfc4"
+                  accentRgb="115, 191, 196"
+                  isSelected={selectedYear === "secondYear"}
+                  isRedirecting={isRedirecting}
                   onClick={() => handleYearClick("secondYear")}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="cursor-pointer h-full block"
-                  style={{ textDecoration: "none" }}
-                  aria-label="Open Second Year recruitment form"
-                >
-                  <LiquidGlassCard
-                    glowIntensity={selectedYear === "secondYear" ? "md" : "xs"}
-                    shadowIntensity="md"
-                    borderRadius="20px"
-                    blurIntensity="xl"
-                    className={`p-6 sm:p-7 text-left h-full flex flex-col justify-between ${
-                      selectedYear === "secondYear"
-                        ? "!border-cyan-400 !bg-cyan-950/40 shadow-lg shadow-cyan-500/20"
-                        : "border-white/15"
-                    }`}
-                  >
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl transition-all pointer-events-none" />
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-3xl sm:text-4xl font-display font-black text-cyan-400/80 transition-colors">
-                          02
-                        </span>
-                        <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-white/5 text-slate-300 border border-white/10" />
-                      </div>
-                      <h3 className="text-xl font-bold font-display text-white transition-colors">SECOND YEAR</h3>
-                      <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        Recruitment form for students currently studying in their second year.
-                      </p>
-                    </div>
-                    <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-cyan-400 text-sm font-semibold">
-                      {selectedYear === "secondYear" ? (
-                        <span className="inline-flex items-center gap-2 text-cyan-300">
-                          <CheckCircle2 className="w-4 h-4 animate-spin" /> Opening Form...
-                        </span>
-                      ) : (
-                        <>
-                          <span className="flex items-center gap-1.5">
-                            CONTINUE <ArrowRight className="w-4 h-4" />
-                          </span>
-                          <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-                        </>
-                      )}
-                    </div>
-                  </LiquidGlassCard>
-                </motion.a>
-
-                {/* Card 2: THIRD YEAR — uses a native <a> tag so the browser ALWAYS opens it */}
-                <motion.a
+                />
+                <GlassYearCard
                   href={recruitmentForms.thirdYear}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  year="thirdYear"
+                  label="Third Year"
+                  number="03"
+                  description="For students currently in their third year of study."
+                  accentColor="#ff810a"
+                  accentRgb="255, 129, 10"
+                  isSelected={selectedYear === "thirdYear"}
+                  isRedirecting={isRedirecting}
                   onClick={() => handleYearClick("thirdYear")}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="cursor-pointer h-full block"
-                  style={{ textDecoration: "none" }}
-                  aria-label="Open Third Year recruitment form"
-                >
-                  <LiquidGlassCard
-                    glowIntensity={selectedYear === "thirdYear" ? "md" : "xs"}
-                    shadowIntensity="md"
-                    borderRadius="20px"
-                    blurIntensity="xl"
-                    className={`p-6 sm:p-7 text-left h-full flex flex-col justify-between ${
-                      selectedYear === "thirdYear"
-                        ? "!border-[#ff810a] !bg-[#ff810a]/25 shadow-lg shadow-[#ff810a]/20"
-                        : "border-white/15"
-                    }`}
-                  >
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#ff810a]/10 rounded-full blur-2xl transition-all pointer-events-none" />
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-3xl sm:text-4xl font-display font-black text-[#ff810a]/90 transition-colors">
-                          03
-                        </span>
-                        <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-white/5 text-slate-300 border border-white/10" />
-                      </div>
-                      <h3 className="text-xl font-bold font-display text-white transition-colors">THIRD YEAR</h3>
-                      <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        Recruitment form for students currently studying in their third year.
-                      </p>
-                    </div>
-                    <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-[#ff810a] text-sm font-semibold">
-                      {selectedYear === "thirdYear" ? (
-                        <span className="inline-flex items-center gap-2 text-amber-300">
-                          <CheckCircle2 className="w-4 h-4 animate-spin" /> Opening Form...
-                        </span>
-                      ) : (
-                        <>
-                          <span className="flex items-center gap-1.5">
-                            CONTINUE <ArrowRight className="w-4 h-4" />
-                          </span>
-                          <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-                        </>
-                      )}
-                    </div>
-                  </LiquidGlassCard>
-                </motion.a>
-
+                />
               </div>
 
-              <div className="px-6 py-4 bg-white/[0.02] border-t border-white/5 text-center text-xs text-slate-500">
-                Form opens securely in a new tab via official Google Forms. Please ensure you are logged into your GITAM student account.
+              {/* Footer */}
+              <div
+                className="px-7 py-4 text-center text-xs"
+                style={{
+                  borderTop: "1px solid rgba(255,255,255,0.06)",
+                  color: "rgba(255,255,255,0.25)",
+                  fontFamily: "monospace",
+                  letterSpacing: "0.03em",
+                }}
+              >
+                Opens in a new tab · Google Forms · Log in with your GITAM account
               </div>
             </LiquidGlassCard>
           </motion.div>
