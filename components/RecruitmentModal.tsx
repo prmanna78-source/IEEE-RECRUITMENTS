@@ -41,10 +41,20 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
   }, [isOpen, onClose]);
 
   const handleSelectYear = (year: RecruitmentYear) => {
+    const url = recruitmentForms[year];
+
+    // IMPORTANT: Open the tab IMMEDIATELY and SYNCHRONOUSLY here, before any
+    // async code, so it happens within the direct user-gesture chain.
+    // Browsers (and Vercel's production environment) block window.open() calls
+    // that occur inside setTimeout because they no longer count as user-initiated.
+    if (typeof window !== "undefined" && url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    // Now run the visual feedback (confetti + loading state) asynchronously.
     setSelectedYear(year);
     setIsRedirecting(true);
 
-    // Subtle celebration confetti
     try {
       confetti({
         particleCount: 50,
@@ -56,18 +66,12 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
       // safe fallback
     }
 
-    // Short transition before opening form in new tab and closing modal
+    // Close the modal after a short animation delay
     setTimeout(() => {
-      const url = recruitmentForms[year];
-      if (typeof window !== "undefined" && url) {
-        window.open(url, "_blank", "noopener,noreferrer");
-      }
-      setTimeout(() => {
-        setIsRedirecting(false);
-        setSelectedYear(null);
-        onClose();
-      }, 400);
-    }, 650);
+      setIsRedirecting(false);
+      setSelectedYear(null);
+      onClose();
+    }, 900);
   };
 
   return (
