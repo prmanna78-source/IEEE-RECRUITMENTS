@@ -129,16 +129,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRecruitmentModal }) => {
             })}
           </nav>
 
-          {/* Right CTA Button & Mobile Toggle */}
-          <div className="flex items-center gap-3">
-            <LiveApplyButton
-              onClick={onOpenRecruitmentModal}
-              size="sm"
-              text="APPLY NOW"
-              className="hidden lg:inline-flex"
-            />
-
-            {/* Mobile Menu Hamburger */}
+          {/* Right — Mobile Hamburger only on small screens, nothing else */}
+          <div className="flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation menu"
@@ -146,6 +138,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRecruitmentModal }) => {
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
+
+            {/* Desktop-only APPLY NOW button */}
+            <div className="hidden lg:block ml-3">
+              <LiveApplyButton
+                onClick={onOpenRecruitmentModal}
+                size="sm"
+                text="APPLY NOW"
+              />
+            </div>
           </div>
         </div>
       </header>
