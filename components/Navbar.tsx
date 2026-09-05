@@ -65,11 +65,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRecruitmentModal }) => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
           isScrolled
-            ? "py-3 liquid-glass border-b border-white/15 shadow-lg shadow-black/50"
-            : "py-5 bg-transparent border-b border-transparent"
+            ? "py-3 border-b border-white/12 shadow-xl shadow-black/60"
+            : "py-5 border-b border-white/5"
         }`}
+        style={{
+          backdropFilter: "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: "blur(20px) saturate(180%)",
+          backgroundColor: isScrolled
+            ? "rgba(5, 7, 11, 0.82)"
+            : "rgba(5, 7, 11, 0.55)",
+        }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Brand Logos (Left) */}

@@ -5,16 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, CheckCircle2, Sparkles, ExternalLink } from "lucide-react";
 import { recruitmentForms, RecruitmentYear } from "@/config/recruitment";
 import confetti from "canvas-confetti";
-import { LiquidGlassCard } from "@/components/ui/liquid-glass";
 
 interface RecruitmentModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+// Self-contained iOS 26 / visionOS Liquid Glass card.
+// Does NOT use LiquidGlassCard — its dark backgroundColor prevents backdrop-filter from showing.
+// Instead we use fully transparent fill + strong backdrop-filter directly on the element.
 interface GlassYearCardProps {
   href: string;
-  year: RecruitmentYear;
   label: string;
   number: string;
   description: string;
@@ -46,153 +47,185 @@ const GlassYearCard: React.FC<GlassYearCardProps> = ({
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      whileHover={{ scale: 1.035, y: -4 }}
+      whileHover={{ scale: 1.04, y: -5 }}
       whileTap={{ scale: 0.97 }}
-      transition={{ type: "spring", stiffness: 340, damping: 28 }}
+      transition={{ type: "spring", stiffness: 320, damping: 26 }}
       aria-label={`Open ${label} recruitment form`}
-      style={{ textDecoration: "none", display: "block" }}
-      className="relative h-full"
+      className="relative block h-full"
+      style={{ textDecoration: "none" }}
     >
-      {/* Outer glow halo */}
+      {/* Colour-tinted outer glow halo */}
       <motion.div
         animate={{
-          opacity: isSelected ? 0.9 : hovered ? 0.7 : 0.35,
-          scale: isSelected ? 1.08 : hovered ? 1.05 : 1,
+          opacity: isSelected ? 1 : hovered ? 0.75 : 0.4,
+          scale: isSelected ? 1.1 : hovered ? 1.06 : 1,
         }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
         style={{
           position: "absolute",
-          inset: "-12px",
-          borderRadius: "32px",
-          background: `radial-gradient(ellipse at 50% 60%, rgba(${accentRgb}, 0.28) 0%, rgba(${accentRgb}, 0.08) 55%, transparent 75%)`,
-          filter: "blur(18px)",
+          inset: -14,
+          borderRadius: 34,
+          background: `radial-gradient(ellipse at 50% 65%, rgba(${accentRgb},0.35) 0%, rgba(${accentRgb},0.1) 50%, transparent 72%)`,
+          filter: "blur(20px)",
           pointerEvents: "none",
           zIndex: 0,
         }}
       />
 
-      {/* Glass card body */}
+      {/* The glass body — key: backgroundColor must be LOW opacity white/transparent so backdrop-filter blurs the colourful page behind it */}
       <div
+        className="relative h-full overflow-hidden"
         style={{
-          position: "relative",
           zIndex: 1,
-          borderRadius: "24px",
-          overflow: "hidden",
-          height: "100%",
-          backdropFilter: "blur(40px) saturate(200%) brightness(1.12)",
-          WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.12)",
+          borderRadius: 22,
+          // Barely-there white fill so backdrop-filter has contrast to work with
           backgroundColor: isSelected
-            ? `rgba(${accentRgb}, 0.18)`
-            : "rgba(255, 255, 255, 0.07)",
+            ? `rgba(${accentRgb}, 0.13)`
+            : "rgba(255, 255, 255, 0.06)",
+          // The actual glass magic — heavy blur + saturation boost
+          backdropFilter: "blur(36px) saturate(220%) brightness(1.15)",
+          WebkitBackdropFilter: "blur(36px) saturate(220%) brightness(1.15)",
+          // Bright top/left border, dim bottom/right border = real glass depth cue
           border: isSelected
-            ? `1.5px solid rgba(${accentRgb}, 0.6)`
-            : "1.5px solid rgba(255, 255, 255, 0.22)",
+            ? `1.5px solid rgba(${accentRgb}, 0.65)`
+            : "1.5px solid rgba(255, 255, 255, 0.25)",
           boxShadow: isSelected
-            ? `inset 0 1.5px 0 rgba(255,255,255,0.55), inset 1.5px 0 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(255,255,255,0.06), 0 24px 48px -8px rgba(0,0,0,0.55), 0 0 0 1px rgba(${accentRgb}, 0.25), 0 0 40px -4px rgba(${accentRgb}, 0.35)`
-            : `inset 0 1.5px 0 rgba(255,255,255,0.45), inset 1.5px 0 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(255,255,255,0.04), 0 16px 36px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)`,
+            ? [
+                "inset 0 1.5px 0 rgba(255,255,255,0.6)",
+                "inset 1.5px 0 0 rgba(255,255,255,0.25)",
+                "inset 0 -1px 0 rgba(255,255,255,0.05)",
+                "0 20px 44px -6px rgba(0,0,0,0.6)",
+                `0 0 42px -4px rgba(${accentRgb},0.4)`,
+              ].join(", ")
+            : [
+                "inset 0 1.5px 0 rgba(255,255,255,0.45)",
+                "inset 1.5px 0 0 rgba(255,255,255,0.2)",
+                "inset 0 -1px 0 rgba(255,255,255,0.04)",
+                "0 12px 32px -8px rgba(0,0,0,0.5)",
+                "0 0 0 1px rgba(255,255,255,0.04)",
+              ].join(", "),
           transition: "all 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
-        {/* Layer 1: Top specular sheen arc */}
+        {/* Top specular sheen arc — the iOS "wet glass" look */}
         <div
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
-            height: "48%",
-            background: "linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 55%, transparent 100%)",
-            borderRadius: "24px 24px 60% 60% / 24px 24px 40px 40px",
+            height: "50%",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.07) 50%, transparent 100%)",
+            borderRadius: "22px 22px 55% 55% / 22px 22px 38px 38px",
             pointerEvents: "none",
             zIndex: 2,
           }}
         />
 
-        {/* Layer 2: Prismatic left-edge refraction */}
+        {/* Prismatic left-edge refraction */}
         <div
           style={{
             position: "absolute",
             top: "8%",
             left: 0,
-            width: "3px",
-            height: "60%",
-            background: `linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 30%, rgba(${accentRgb},0.6) 55%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0) 100%)`,
+            width: 3,
+            height: "62%",
+            background: `linear-gradient(180deg,
+              transparent 0%,
+              rgba(255,255,255,0.55) 28%,
+              rgba(${accentRgb},0.65) 52%,
+              rgba(255,255,255,0.35) 76%,
+              transparent 100%)`,
             borderRadius: "0 2px 2px 0",
             pointerEvents: "none",
-            zIndex: 2,
-            opacity: hovered || isSelected ? 0.9 : 0.5,
+            zIndex: 3,
+            opacity: hovered || isSelected ? 1 : 0.55,
             transition: "opacity 0.3s ease",
           }}
         />
 
-        {/* Layer 3: Animated shimmer sweep */}
+        {/* Shimmer sweep on hover/select */}
         <motion.div
-          animate={{ x: hovered || isSelected ? "200%" : "-60%" }}
-          transition={{ duration: hovered ? 0.75 : 0.5, ease: "easeInOut" }}
+          animate={{ x: hovered || isSelected ? "230%" : "-70%" }}
+          transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1] }}
           style={{
             position: "absolute",
             top: 0,
-            left: "-60%",
+            left: "-70%",
             width: "55%",
             height: "100%",
-            background: "linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.09) 50%, transparent 80%)",
-            transform: "skewX(-12deg)",
+            background:
+              "linear-gradient(108deg, transparent 15%, rgba(255,255,255,0.1) 50%, transparent 85%)",
+            transform: "skewX(-14deg)",
             pointerEvents: "none",
-            zIndex: 3,
+            zIndex: 4,
           }}
         />
 
-        {/* Layer 4: Bottom reflection tint */}
+        {/* Bottom accent tint */}
         <div
           style={{
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
-            height: "35%",
-            background: `linear-gradient(0deg, rgba(${accentRgb}, 0.07) 0%, transparent 100%)`,
+            height: "38%",
+            background: `linear-gradient(0deg, rgba(${accentRgb},0.09) 0%, transparent 100%)`,
             pointerEvents: "none",
             zIndex: 2,
           }}
         />
 
-        {/* Content */}
+        {/* Card content */}
         <div
           style={{
             position: "relative",
             zIndex: 10,
-            padding: "28px 24px 24px",
+            padding: "26px 22px 22px",
             display: "flex",
             flexDirection: "column" as const,
             justifyContent: "space-between",
             height: "100%",
+            minHeight: 200,
           }}
         >
           <div>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
-              <div
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                marginBottom: 14,
+              }}
+            >
+              {/* Giant frosted number */}
+              <span
                 style={{
-                  fontSize: "3.5rem",
+                  fontSize: "3.8rem",
                   fontWeight: 900,
                   lineHeight: 1,
                   fontFamily: "var(--font-space-grotesk), sans-serif",
                   color: accentColor,
-                  textShadow: `0 0 24px rgba(${accentRgb}, 0.6), 0 2px 8px rgba(0,0,0,0.4)`,
                   letterSpacing: "-0.04em",
-                  filter: isSelected ? "brightness(1.2)" : "brightness(1)",
-                  transition: "filter 0.3s ease",
+                  textShadow: `0 0 28px rgba(${accentRgb},0.65), 0 2px 8px rgba(0,0,0,0.5)`,
+                  filter: isSelected ? "brightness(1.25)" : "brightness(1)",
+                  transition: "filter 0.3s",
                 }}
               >
                 {number}
-              </div>
-              <div
+              </span>
+
+              {/* Frosted pill badge */}
+              <span
                 style={{
-                  padding: "4px 10px",
-                  borderRadius: "100px",
-                  background: `rgba(${accentRgb}, 0.12)`,
-                  border: `1px solid rgba(${accentRgb}, 0.3)`,
-                  backdropFilter: "blur(8px)",
-                  fontSize: "10px",
+                  padding: "4px 11px",
+                  borderRadius: 100,
+                  background: `rgba(${accentRgb}, 0.14)`,
+                  border: `1px solid rgba(${accentRgb}, 0.35)`,
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                  fontSize: 10,
                   fontWeight: 700,
                   fontFamily: "monospace",
                   letterSpacing: "0.1em",
@@ -201,49 +234,79 @@ const GlassYearCard: React.FC<GlassYearCardProps> = ({
                 }}
               >
                 OPEN
-              </div>
+              </span>
             </div>
 
             <h3
               style={{
-                fontSize: "1.25rem",
+                margin: 0,
+                fontSize: "1.2rem",
                 fontWeight: 800,
                 fontFamily: "var(--font-space-grotesk), sans-serif",
-                color: "#ffffff",
+                color: "#fff",
                 letterSpacing: "-0.01em",
-                margin: 0,
-                textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+                textShadow: "0 1px 5px rgba(0,0,0,0.55)",
               }}
             >
               {label.toUpperCase()}
             </h3>
-            <p style={{ marginTop: "8px", fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
+            <p
+              style={{
+                marginTop: 7,
+                fontSize: "0.78rem",
+                color: "rgba(255,255,255,0.48)",
+                lineHeight: 1.55,
+              }}
+            >
               {description}
             </p>
           </div>
 
+          {/* CTA row */}
           <div
             style={{
-              marginTop: "24px",
-              paddingTop: "16px",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
+              marginTop: 20,
+              paddingTop: 14,
+              borderTop: "1px solid rgba(255,255,255,0.09)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
             }}
           >
             {isSelected ? (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "0.8rem", fontWeight: 700, color: accentColor, fontFamily: "monospace", letterSpacing: "0.05em" }}>
-                <CheckCircle2 style={{ width: 15, height: 15, animation: "spin 1s linear infinite" }} />
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  color: accentColor,
+                  fontFamily: "monospace",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                <CheckCircle2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} />
                 OPENING FORM...
               </span>
             ) : (
               <>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "0.8rem", fontWeight: 700, color: accentColor, fontFamily: "monospace", letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
-                  CONTINUE
-                  <ArrowRight style={{ width: 14, height: 14 }} />
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontSize: "0.78rem",
+                    fontWeight: 700,
+                    color: accentColor,
+                    fontFamily: "monospace",
+                    letterSpacing: "0.09em",
+                    textTransform: "uppercase" as const,
+                  }}
+                >
+                  CONTINUE <ArrowRight style={{ width: 13, height: 13 }} />
                 </span>
-                <ExternalLink style={{ width: 14, height: 14, color: `rgba(${accentRgb}, 0.5)` }} />
+                <ExternalLink style={{ width: 13, height: 13, color: `rgba(${accentRgb},0.5)` }} />
               </>
             )}
           </div>
@@ -253,6 +316,7 @@ const GlassYearCard: React.FC<GlassYearCardProps> = ({
   );
 };
 
+// Modal shell uses its own glass too — transparent enough for backdrop-filter to pop
 export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onClose }) => {
   const [selectedYear, setSelectedYear] = useState<RecruitmentYear | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -287,9 +351,7 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
         origin: { y: 0.55 },
         colors: ["#73bfc4", "#ff810a", "#8da0ce", "#ffffff", "#a5f3fc"],
       });
-    } catch {
-      // safe fallback
-    }
+    } catch { /* noop */ }
     setTimeout(() => {
       setIsRedirecting(false);
       setSelectedYear(null);
@@ -311,51 +373,53 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.28 }}
             onClick={onClose}
             className="fixed inset-0"
             style={{
-              background: "rgba(2, 6, 18, 0.82)",
-              backdropFilter: "blur(28px) saturate(140%)",
-              WebkitBackdropFilter: "blur(28px) saturate(140%)",
+              background: "rgba(2,6,18,0.78)",
+              backdropFilter: "blur(24px) saturate(130%)",
+              WebkitBackdropFilter: "blur(24px) saturate(130%)",
             }}
           />
 
-          {/* Ambient blobs */}
+          {/* Dual colour blobs — these are what get blurred through the glass cards */}
           <div className="fixed inset-0 pointer-events-none flex items-center justify-center">
-            <div
-              style={{
-                width: 560,
-                height: 560,
-                borderRadius: "50%",
-                background: "radial-gradient(ellipse, rgba(115,191,196,0.18) 0%, rgba(255,129,10,0.12) 50%, transparent 75%)",
-                filter: "blur(40px)",
-              }}
-            />
+            <div style={{ position: "absolute", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(115,191,196,0.4) 0%, transparent 68%)", filter: "blur(50px)", transform: "translate(-130px, 60px)" }} />
+            <div style={{ position: "absolute", width: 460, height: 460, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(255,129,10,0.35) 0%, transparent 68%)", filter: "blur(50px)", transform: "translate(120px, -50px)" }} />
+            <div style={{ position: "absolute", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(141,160,206,0.25) 0%, transparent 68%)", filter: "blur(40px)", transform: "translate(20px, 80px)" }} />
           </div>
 
-          {/* Modal panel */}
+          {/* Modal panel — glass shell around the cards */}
           <motion.div
             ref={modalRef}
-            initial={{ opacity: 0, scale: 0.94, y: 24 }}
+            initial={{ opacity: 0, scale: 0.93, y: 28 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 24 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, scale: 0.93, y: 28 }}
+            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
             className="relative w-full max-w-2xl z-10"
           >
-            <LiquidGlassCard
-              glowIntensity="lg"
-              shadowIntensity="lg"
-              borderRadius="32px"
-              blurIntensity="xl"
-              className="w-full"
+            <div
               style={{
-                border: "1px solid rgba(255,255,255,0.18)",
-                backgroundColor: "rgba(8, 12, 24, 0.55)",
+                borderRadius: 32,
+                overflow: "hidden",
+                backgroundColor: "rgba(255,255,255,0.05)",
+                backdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
+                WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
+                border: "1.5px solid rgba(255,255,255,0.18)",
+                boxShadow: [
+                  "inset 0 1.5px 0 rgba(255,255,255,0.4)",
+                  "inset 1.5px 0 0 rgba(255,255,255,0.14)",
+                  "0 32px 64px -12px rgba(0,0,0,0.7)",
+                  "0 0 0 1px rgba(255,255,255,0.04)",
+                ].join(", "),
               }}
             >
               {/* Accent stripe */}
-              <div className="h-1 w-full bg-gradient-to-r from-[#73bfc4] via-[#8da0ce] to-[#ff810a]" />
+              <div style={{ height: 4, background: "linear-gradient(90deg, #73bfc4, #8da0ce, #ff810a)" }} />
+
+              {/* Top sheen inside modal shell */}
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%)", pointerEvents: "none", zIndex: 1 }} />
 
               {/* Close button */}
               <button
@@ -363,25 +427,27 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
                 aria-label="Close"
                 className="absolute top-4 right-4 z-20 flex items-center justify-center w-9 h-9 rounded-full text-white/50 hover:text-white transition-colors"
                 style={{
-                  background: "rgba(255,255,255,0.07)",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.14)",
                   backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
                 }}
               >
                 <X className="w-4 h-4" />
               </button>
 
               {/* Header */}
-              <div className="px-7 pt-7 pb-4 text-center">
+              <div className="relative z-10 px-7 pt-7 pb-5 text-center">
                 <div
-                  className="inline-flex items-center gap-2 mb-3"
+                  className="inline-flex items-center gap-2 mb-4"
                   style={{
                     padding: "5px 14px",
-                    borderRadius: "100px",
-                    background: "rgba(115,191,196,0.1)",
-                    border: "1px solid rgba(115,191,196,0.25)",
+                    borderRadius: 100,
+                    background: "rgba(115,191,196,0.12)",
+                    border: "1px solid rgba(115,191,196,0.3)",
                     backdropFilter: "blur(10px)",
-                    fontSize: "11px",
+                    WebkitBackdropFilter: "blur(10px)",
+                    fontSize: 11,
                     fontWeight: 700,
                     fontFamily: "monospace",
                     letterSpacing: "0.1em",
@@ -397,16 +463,15 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
                 >
                   SELECT YOUR YEAR
                 </h2>
-                <p className="mt-2 text-sm text-white/40 max-w-sm mx-auto leading-relaxed">
+                <p className="mt-2 text-sm max-w-xs mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.42)" }}>
                   Choose your academic year to open the appropriate recruitment form.
                 </p>
               </div>
 
-              {/* Glass cards */}
-              <div className="p-6 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Glass year cards */}
+              <div className="relative z-10 px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <GlassYearCard
                   href={recruitmentForms.secondYear}
-                  year="secondYear"
                   label="Second Year"
                   number="02"
                   description="For students currently in their second year of study."
@@ -418,7 +483,6 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
                 />
                 <GlassYearCard
                   href={recruitmentForms.thirdYear}
-                  year="thirdYear"
                   label="Third Year"
                   number="03"
                   description="For students currently in their third year of study."
@@ -432,17 +496,18 @@ export const RecruitmentModal: React.FC<RecruitmentModalProps> = ({ isOpen, onCl
 
               {/* Footer */}
               <div
-                className="px-7 py-4 text-center text-xs"
+                className="relative z-10 px-7 py-4 text-center"
                 style={{
-                  borderTop: "1px solid rgba(255,255,255,0.06)",
-                  color: "rgba(255,255,255,0.25)",
+                  borderTop: "1px solid rgba(255,255,255,0.07)",
+                  fontSize: 11,
                   fontFamily: "monospace",
                   letterSpacing: "0.03em",
+                  color: "rgba(255,255,255,0.22)",
                 }}
               >
                 Opens in a new tab · Google Forms · Log in with your GITAM account
               </div>
-            </LiquidGlassCard>
+            </div>
           </motion.div>
         </div>
       )}
